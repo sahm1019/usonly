@@ -804,6 +804,19 @@ def send_group_msg(group_id: str, payload: GroupMsgCreate, authorization: Option
     conn.close()
     return {"ok": True}
 
+from datetime import datetime, timedelta, timezone
+
+@app.post("/api/account/delete")
+def request_account_deletion(authorization: Optional[str] = Header(default=None)):
+    current = require_user(authorization)
+    scheduled_at = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+    return {
+        "ok": True,
+        "grace_period_days": 30,
+        "deletion_scheduled_at": scheduled_at,
+        "message": "إذا حذفت الحساب عندك مهلة ثلاثين يوم، لو ما رجعت حسابك ينحذف نهائي.",
+    }
+
 
 HTML_PAGE = """<!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -2615,6 +2628,14 @@ function closeModal(id) {
 
 loadState();
 </script>
+<div style="margin:20px 14px;padding:12px;border:1px solid #3f1d24;border-radius:12px;background:#160b0e;">
+  <p style="margin:0 0 10px;font-size:12px;color:#fca5a5;">
+    إذا حذفت الحساب عندك مهلة ثلاثين يوم، لو ما رجعت حسابك ينحذف نهائي.
+  </p>
+  <button type="button" onclick="alert('إذا حذفت الحساب عندك مهلة ثلاثين يوم، لو ما رجعت حسابك ينحذف نهائي.')" style="width:100%;background:#dc2626;color:#fff;border:none;border-radius:10px;padding:10px;font-weight:800;cursor:pointer;">
+    حذف الحساب
+  </button>
+</div>
 </body>
 </html>
 """
